@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import contactsRouter from './routers/contacts.js';
 import { errorHandler } from './middlewares/errorHandler.js';
-import { notFoundHandler } from './middlewares/notFoundHandler.js/index.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
 export const setupServer = () => {
   const app = express();

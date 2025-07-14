@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import {
-  getContacts,
+  getContactsPaginated,
   getContactById,
   addContact,
   updateContactById,
@@ -8,11 +8,35 @@ import {
 } from '../services/contacts.js';
 
 export const getAllContacts = async (req, res, next) => {
-  const contactsData = await getContacts();
+  const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+  const perPage =
+    parseInt(req.query.perPage) > 0 ? parseInt(req.query.perPage) : 10;
+  const sortBy = req.query.sortBy || 'name';
+  const sortOrder = req.query.sortOrder === 'desc' ? 'desc' : 'asc';
+
+  const { contacts, totalItems } = await getContactsPaginated(
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+  );
+
+  const totalPages = Math.ceil(totalItems / perPage);
+  const hasPreviousPage = page > 1;
+  const hasNextPage = page < totalPages;
+
   res.json({
     status: 200,
     message: 'Successfully found contacts!',
-    contactsData,
+    data: {
+      data: contacts,
+      page,
+      perPage,
+      totalItems,
+      totalPages,
+      hasPreviousPage,
+      hasNextPage,
+    },
   });
 };
 
@@ -45,6 +69,7 @@ export const createContact = async (req, res, next) => {
     data: newContact,
   });
 };
+
 export const patchContact = async (req, res, next) => {
   const { contactId } = req.params;
   const updatedContact = await updateContactById(contactId, req.body);

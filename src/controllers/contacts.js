@@ -8,7 +8,13 @@ import {
 } from '../services/contacts.js';
 
 export const getAllContacts = async (req, res, next) => {
-  const contactsData = await getContacts();
+  const contactsArr = await getContacts();
+
+  const contactsData = contactsArr.map((contact) => {
+    const obj = contact.toObject ? contact.toObject() : contact;
+    delete obj.__v;
+    return obj;
+  });
   res.json({
     status: 200,
     message: 'Successfully found contacts!',
@@ -24,10 +30,13 @@ export const getContact = async (req, res, next) => {
     throw createError(404, 'Contact not found');
   }
 
+  const obj = contactData.toObject ? contactData.toObject() : contactData;
+  delete obj.__v;
+
   res.json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
-    contactData,
+    contactData: obj,
   });
 };
 
@@ -39,12 +48,16 @@ export const createContact = async (req, res, next) => {
 
   const newContact = await addContact(req.body);
 
+  const obj = newContact.toObject ? newContact.toObject() : newContact;
+  delete obj.__v;
+
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
-    data: newContact,
+    data: obj,
   });
 };
+
 export const patchContact = async (req, res, next) => {
   const { contactId } = req.params;
   const updatedContact = await updateContactById(contactId, req.body);
@@ -53,10 +66,15 @@ export const patchContact = async (req, res, next) => {
     throw createError(404, 'Contact not found');
   }
 
+  const obj = updatedContact.toObject
+    ? updatedContact.toObject()
+    : updatedContact;
+  delete obj.__v;
+
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: updatedContact,
+    data: obj,
   });
 };
 

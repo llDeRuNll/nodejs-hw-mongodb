@@ -31,7 +31,6 @@ export const getContact = async (req, res, next) => {
   }
 
   const obj = contactData.toObject ? contactData.toObject() : contactData;
-  delete obj.__v;
 
   res.json({
     status: 200,
@@ -49,7 +48,6 @@ export const createContact = async (req, res, next) => {
   const newContact = await addContact(req.body);
 
   const obj = newContact.toObject ? newContact.toObject() : newContact;
-  delete obj.__v;
 
   res.status(201).json({
     status: 201,
@@ -69,7 +67,6 @@ export const patchContact = async (req, res, next) => {
   const obj = updatedContact.toObject
     ? updatedContact.toObject()
     : updatedContact;
-  delete obj.__v;
 
   res.json({
     status: 200,

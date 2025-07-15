@@ -4,6 +4,7 @@ import Session from '../db/models/Session.js';
 import jwt from 'jsonwebtoken';
 import createHttpError from 'http-errors';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
 export const registerUser = async ({ name, email, password }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -21,7 +22,38 @@ export const registerUser = async ({ name, email, password }) => {
   return userData;
 };
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
+export const loginUser = async ({ email, password }) => {
+  const user = await User.findOne({ email });
+  if (!user) throw createHttpError(401, 'Invalid credentials');
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw createHttpError(401, 'Invalid credentials');
+
+  await Session.deleteMany({ userId: user._id });
+
+  const accessToken = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    expiresIn: '15m',
+  });
+  const refreshToken = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    expiresIn: '30d',
+  });
+
+  const now = new Date();
+  const accessTokenValidUntil = new Date(now.getTime() + 15 * 60 * 1000);
+  const refreshTokenValidUntil = new Date(
+    now.getTime() + 30 * 24 * 60 * 60 * 1000,
+  );
+
+  const session = await Session.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil,
+    refreshTokenValidUntil,
+  });
+
+  return { accessToken, refreshToken, sessionId: session._id.toString() };
+};
 
 export const refreshSession = async (refreshToken) => {
   const session = await Session.findOne({ refreshToken });

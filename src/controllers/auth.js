@@ -1,4 +1,4 @@
-import { logoutSession, registerUser } from '../services/auth.js';
+import { loginUser, logoutSession, registerUser } from '../services/auth.js';
 import createHttpError from 'http-errors';
 import { refreshSession } from '../services/auth.js';
 import jwt from 'jsonwebtoken';
@@ -53,6 +53,33 @@ export const register = async (req, res, next) => {
     status: 201,
     message: 'Successfully registered a user!',
     data: user,
+  });
+};
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  const { accessToken, refreshToken, sessionId } = await loginUser({
+    email,
+    password,
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+  res.cookie('sessionId', sessionId.toString(), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully logged in an user!',
+    data: { accessToken },
   });
 };
 

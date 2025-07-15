@@ -2,6 +2,7 @@ import {
   loginUser,
   logoutSession,
   registerUser,
+  resetPassword,
   sendResetEmail,
 } from '../services/auth.js';
 import createHttpError from 'http-errors';
@@ -142,6 +143,15 @@ export const sendResetEmailController = async (req, res, next) => {
   res.status(200).json({
     status: 200,
     message: 'Reset password email has been successfully sent.',
+    data: {},
+  });
+};
+export const resetPwd = async (req, res) => {
+  const { token, password } = req.body;
+  await resetPassword(token, password);
+  res.status(200).json({
+    status: 200,
+    message: 'Password has been successfully reset.',
     data: {},
   });
 };

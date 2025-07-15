@@ -158,3 +158,21 @@ export const sendResetEmail = async (email) => {
     );
   }
 };
+
+export const resetPassword = async (token, password) => {
+  let payload;
+  try {
+    payload = jwt.verify(token, JWT_SECRET);
+  } catch {
+    throw createHttpError(401, 'Token is expired or invalid.');
+  }
+
+  const user = await User.findOne({ email: payload.email });
+  if (!user) throw createHttpError(404, 'User not found!');
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+  await user.save();
+
+  await Session.deleteMany({ userId: user._id });
+};

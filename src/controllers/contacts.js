@@ -1,4 +1,5 @@
 import createError from 'http-errors';
+import cloudinary from '../utils/cloudinary.js';
 import {
   getContactsPaginated,
   getContactById,
@@ -48,7 +49,6 @@ export const getContact = async (req, res, next) => {
   const contactData = await getContactById(userId, contactId);
 
   if (!contactData) throw createError(404, 'Contact not found');
-
   const obj = contactData.toObject ? contactData.toObject() : contactData;
   res.json({
     status: 200,
@@ -62,7 +62,28 @@ export const createContact = async (req, res, next) => {
   if (!name || !phoneNumber || !contactType) {
     throw createError(400, 'name, phoneNumber and contactType are required');
   }
-  const newContact = await addContact(req.body);
+
+  let photoUrl = null;
+  if (req.file) {
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'contacts' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+      stream.end(req.file.buffer);
+    });
+    photoUrl = uploadResult.secure_url;
+  }
+
+  const newContact = await addContact({
+    ...req.body,
+    photo: photoUrl,
+    userId: req.user._id,
+  });
+
   const obj = newContact.toObject ? newContact.toObject() : newContact;
   res.status(201).json({
     status: 201,
@@ -74,9 +95,26 @@ export const createContact = async (req, res, next) => {
 export const patchContact = async (req, res, next) => {
   const userId = req.user._id;
   const { contactId } = req.params;
-  const updatedContact = await updateContactById(userId, contactId, req.body);
 
-  if (!updatedContact) throw createError(404, 'Contact not found');
+  let photoUrl;
+  if (req.file) {
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: 'contacts' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+      stream.end(req.file.buffer);
+    });
+    photoUrl = uploadResult.secure_url;
+  }
+
+  const update = { ...req.body };
+  if (photoUrl) update.photo = photoUrl;
+
+  const updatedContact = await updateContactById(userId, contactId, update);
   if (!updatedContact) throw createError(404, 'Contact not found');
 
   const obj = updatedContact.toObject
@@ -95,7 +133,5 @@ export const removeContact = async (req, res, next) => {
   const deletedContact = await deleteContactById(userId, contactId);
 
   if (!deletedContact) throw createError(404, 'Contact not found');
-  if (!deletedContact) throw createError(404, 'Contact not found');
-
   res.status(204).send();
 };

@@ -58,7 +58,6 @@ export const getContact = async (req, res, next) => {
 };
 
 export const createContact = async (req, res, next) => {
-  const userId = req.user._id;
   const { name, phoneNumber, contactType } = req.body;
   if (!name || !phoneNumber || !contactType) {
     throw createError(400, 'name, phoneNumber and contactType are required');

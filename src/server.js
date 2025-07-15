@@ -17,11 +17,11 @@ export const setupServer = () => {
 
   app.use('/contacts', contactsRouter);
 
+  app.use('/auth', authRouter);
+
   app.use(notFoundHandler);
 
   app.use(errorHandler);
-
-  app.use('/auth', authRouter);
 
   app.use(cookieParser());
 

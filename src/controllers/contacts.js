@@ -49,26 +49,25 @@ export const getContact = async (req, res, next) => {
 
   if (!contactData) throw createError(404, 'Contact not found');
 
+  const obj = contactData.toObject ? contactData.toObject() : contactData;
   res.json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
-    contactData,
+    contactData: obj,
   });
 };
 
 export const createContact = async (req, res, next) => {
-  const userId = req.user._id;
   const { name, phoneNumber, contactType } = req.body;
   if (!name || !phoneNumber || !contactType) {
     throw createError(400, 'name, phoneNumber and contactType are required');
   }
-
-  const newContact = await addContact({ ...req.body, userId });
-
+  const newContact = await addContact(req.body);
+  const obj = newContact.toObject ? newContact.toObject() : newContact;
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
-    data: newContact,
+    data: obj,
   });
 };
 
@@ -78,11 +77,15 @@ export const patchContact = async (req, res, next) => {
   const updatedContact = await updateContactById(userId, contactId, req.body);
 
   if (!updatedContact) throw createError(404, 'Contact not found');
+  if (!updatedContact) throw createError(404, 'Contact not found');
 
+  const obj = updatedContact.toObject
+    ? updatedContact.toObject()
+    : updatedContact;
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: updatedContact,
+    data: obj,
   });
 };
 
@@ -91,6 +94,7 @@ export const removeContact = async (req, res, next) => {
   const { contactId } = req.params;
   const deletedContact = await deleteContactById(userId, contactId);
 
+  if (!deletedContact) throw createError(404, 'Contact not found');
   if (!deletedContact) throw createError(404, 'Contact not found');
 
   res.status(204).send();

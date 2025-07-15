@@ -3,10 +3,12 @@ import {
   register,
   refresh,
   logout,
+  login,
   sendResetEmailController,
 } from '../controllers/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import {
+  loginSchema,
   registerSchema,
   sendResetEmailSchema,
 } from '../schemas/authSchemas.js';
@@ -24,6 +26,7 @@ router.post(
 router.use(cookieParser());
 
 router.post('/register', validateBody(registerSchema), ctrlWrapper(register));
+router.post('/login', validateBody(loginSchema), ctrlWrapper(login));
 router.post('/refresh', ctrlWrapper(refresh));
 router.post('/logout', ctrlWrapper(logout));
 

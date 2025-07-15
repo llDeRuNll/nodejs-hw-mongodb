@@ -7,10 +7,13 @@ import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import path from 'path';
-import YAML from 'yamljs';
+
+import fs from 'fs';
 
 export const setupServer = () => {
-  const swaggerDocument = YAML.load(path.resolve('docs/openapi.yaml'));
+  const swaggerDocument = JSON.parse(
+    fs.readFileSync(path.resolve('docs/swagger.json'), 'utf-8'),
+  );
   const app = express();
 
   app.use(cors());

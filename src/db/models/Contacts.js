@@ -30,6 +30,7 @@ const contactSchema = new Schema(
     },
   },
   {
+    versionKey: false,
     timestamps: true,
   },
 );

@@ -32,7 +32,7 @@ responses:
               type: string
               example: Successfully found contact.
             data:
-              $ref: '../../../components/schemas/contact.yaml'
+              $ref: '../../components/schemas/contact.yaml'
         examples:
           success:
             summary: Example response
@@ -48,6 +48,6 @@ responses:
                 createdAt: '2024-06-01T12:34:56.789Z'
                 updatedAt: '2024-06-01T12:34:56.789Z'
   '401':
-    $ref: '../../../components/responses/401.yaml'
+    $ref: '../../components/responses/404.yaml'
   '404':
-    $ref: '../../../components/responses/404.yaml'
+    $ref: '../../components/responses/404.yaml'

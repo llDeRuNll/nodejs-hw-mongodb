@@ -86,7 +86,7 @@ responses:
                 data:
                   type: array
                   items:
-                    $ref: '../../components/schemas/contact.yaml'
+                    $ref: '../components/schemas/contact.yaml'
                 page:
                   type: number
                   example: 1
@@ -133,4 +133,4 @@ responses:
                 hasNextPage: true
                 hasPreviousPage: false
   '404':
-    $ref: '../../components/responses/404.yaml'
+    $ref: '../components/responses/404.yaml'

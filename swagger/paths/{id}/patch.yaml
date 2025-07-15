@@ -56,14 +56,14 @@ responses:
               type: string
               example: Contact updated successfully!
             data:
-              $ref: ../../../components/schemas/contact.yaml
+              $ref: ../../components/schemas/contact.yaml
   '400':
     description: Invalid input or bad request
     content:
       application/json:
         schema:
-          $ref: ../../../components/responses/400.yaml
+          $ref: ../../components/responses/404.yaml
   '401':
-    $ref: '../../../components/responses/401.yaml'
+    $ref: '../../components/responses/404.yaml'
   '404':
-    $ref: '../../../components/responses/404.yaml'
+    $ref: '../../components/responses/404.yaml'

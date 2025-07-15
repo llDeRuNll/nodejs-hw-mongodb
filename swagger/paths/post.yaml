@@ -69,7 +69,7 @@ responses:
               example: Successfully created a contact!
             data:
               type: object
-              $ref: ../../components/schemas/contact.yaml
+              $ref: ../components/schemas/contact.yaml
         examples:
           contactCreated:
             summary: Contact creation success example
@@ -85,4 +85,4 @@ responses:
                 contactType: 'personal'
                 photo: 'https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg'
   '401':
-    $ref: '../../components/responses/404.yaml'
+    $ref: '../components/responses/404.yaml'

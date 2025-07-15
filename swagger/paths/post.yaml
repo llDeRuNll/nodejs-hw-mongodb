@@ -1,0 +1,88 @@
+tags:
+  - Contacts
+summary: Create contact
+operationId: createContact
+description: Create a contact with payload.
+security:
+  - bearerAuth: []
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - name
+          - phoneNumber
+        properties:
+          name:
+            description: Contact's holder name
+            type: string
+            example: 'Ratatouille'
+          phoneNumber:
+            description: Phone number
+            type: string
+            example: '087263791982'
+          email:
+            description: Contact's e-mail
+            type: string
+            example: 'ratatouille@gmail.com'
+          isFavourite:
+            description: Is the contact added in favourites?
+            type: boolean
+            example: true
+          contactType:
+            description: Contact type
+            type: string
+            enum: [work, home, personal]
+            example: personal
+          photo:
+            description: Link to contact's photo (file upload)
+            type: string
+            format: binary
+      examples:
+        createContactExample:
+          summary: Example payload for creating a contact
+          value:
+            name: 'Ratatouille'
+            phoneNumber: '087263791982'
+            email: 'ratatouille@gmail.com'
+            isFavourite: true
+            contactType: personal
+responses:
+  '201':
+    description: Creates a contact
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: Successfully created a contact!
+            data:
+              type: object
+              $ref: ../../components/schemas/contact.yaml
+        examples:
+          contactCreated:
+            summary: Contact creation success example
+            value:
+              status: 201
+              message: Successfully created a contact!
+              data:
+                id: '65ca67e7ae7f10c88b598384'
+                name: 'Ratatouille'
+                phoneNumber: '087263791982'
+                email: 'ratatouille@gmail.com'
+                isFavourite: true
+                contactType: 'personal'
+                photo: 'https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg'
+  '401':
+    $ref: '../../components/responses/404.yaml'

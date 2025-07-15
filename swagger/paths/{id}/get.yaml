@@ -1,0 +1,53 @@
+tags:
+  - Contacts
+summary: Get contact by id
+operationId: getContactById
+description: Get a single contact by its unique identifier.
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: contactId
+    required: true
+    description: Unique ID of the contact
+    schema:
+      type: string
+      example: '65ca67e7ae7f10c88b598384'
+responses:
+  '200':
+    description: Contact found successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: Successfully found contact.
+            data:
+              $ref: '../../../components/schemas/contact.yaml'
+        examples:
+          success:
+            summary: Example response
+            value:
+              status: 200
+              message: Successfully found contact.
+              data:
+                _id: '65ca67e7ae7f10c88b598384'
+                name: 'John Doe'
+                phoneNumber: '+123456789'
+                contactType: 'work'
+                photo: 'https://res.cloudinary.com/demo/image/upload/sample.jpg'
+                createdAt: '2024-06-01T12:34:56.789Z'
+                updatedAt: '2024-06-01T12:34:56.789Z'
+  '401':
+    $ref: '../../../components/responses/401.yaml'
+  '404':
+    $ref: '../../../components/responses/404.yaml'

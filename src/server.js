@@ -5,8 +5,12 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import path from 'path';
+import YAML from 'yamljs';
 
 export const setupServer = () => {
+  const swaggerDocument = YAML.load(path.resolve('docs/openapi.yaml'));
   const app = express();
   app.use(cors());
   app.use(express.json());
@@ -18,6 +22,7 @@ export const setupServer = () => {
   app.use('/contacts', contactsRouter);
 
   app.use('/auth', authRouter);
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.use(notFoundHandler);
 

@@ -1,6 +1,10 @@
 import { logoutSession, registerUser } from '../services/auth.js';
 import createHttpError from 'http-errors';
 import { refreshSession } from '../services/auth.js';
+import jwt from 'jsonwebtoken';
+import Session from '../db/models/Session.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
 
 export const register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -9,6 +13,41 @@ export const register = async (req, res, next) => {
   if (!user) {
     throw createHttpError(409, 'Email in use');
   }
+
+  const accessToken = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    expiresIn: '15m',
+  });
+  const refreshToken = jwt.sign({ userId: user._id }, JWT_SECRET, {
+    expiresIn: '7d',
+  });
+
+  const now = new Date();
+  const accessTokenValidUntil = new Date(now.getTime() + 15 * 60 * 1000);
+  const refreshTokenValidUntil = new Date(
+    now.getTime() + 7 * 24 * 60 * 60 * 1000,
+  );
+
+  const session = await Session.create({
+    userId: user._id,
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil,
+    refreshTokenValidUntil,
+  });
+
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('sessionId', session._id.toString(), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   res.status(201).json({
     status: 201,
@@ -23,11 +62,20 @@ export const refresh = async (req, res, next) => {
     throw createHttpError(401, 'No refresh token');
   }
 
-  const { accessToken, refreshToken: newRefreshToken } = await refreshSession(
-    refreshToken,
-  );
+  const {
+    accessToken,
+    refreshToken: newRefreshToken,
+    sessionId,
+  } = await refreshSession(refreshToken);
 
   res.cookie('refreshToken', newRefreshToken, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  res.cookie('sessionId', sessionId, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

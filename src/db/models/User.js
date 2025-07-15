@@ -7,12 +7,15 @@ const userSchema = new Schema(
       type: String,
       required: true,
       unique: true,
-      // Валідація email через regexp
+
       match: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
     },
     password: { type: String, required: true },
   },
-  { timestamps: true },
+  {
+    versionKey: false,
+    timestamps: true,
+  },
 );
 
 const User = model('User', userSchema);

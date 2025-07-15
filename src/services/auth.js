@@ -50,7 +50,7 @@ export const refreshSession = async (refreshToken) => {
     now.getTime() + 7 * 24 * 60 * 60 * 1000,
   );
 
-  await Session.create({
+  const newSession = await Session.create({
     userId: user._id,
     accessToken,
     refreshToken: refreshTokenNew,
@@ -58,7 +58,11 @@ export const refreshSession = async (refreshToken) => {
     refreshTokenValidUntil,
   });
 
-  return { accessToken, refreshToken: refreshTokenNew };
+  return {
+    accessToken,
+    refreshToken: refreshTokenNew,
+    sessionId: newSession._id.toString(),
+  };
 };
 
 export const logoutSession = async ({ sessionId, refreshToken }) => {

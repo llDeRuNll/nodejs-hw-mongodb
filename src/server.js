@@ -12,23 +12,22 @@ import YAML from 'yamljs';
 export const setupServer = () => {
   const swaggerDocument = YAML.load(path.resolve('docs/openapi.yaml'));
   const app = express();
+
   app.use(cors());
   app.use(express.json());
+  app.use(cookieParser());
 
   app.get('/', (req, res) => {
     res.send('<h1>Contacts main page</h1>');
   });
 
   app.use('/contacts', contactsRouter);
-
   app.use('/auth', authRouter);
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.use(notFoundHandler);
 
   app.use(errorHandler);
-
-  app.use(cookieParser());
 
   const port = Number(process.env.PORT) || 3000;
   app.listen(port, () => console.log(`Server is running on ${port} port`));

@@ -7,8 +7,6 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   description: Conacts backend api
 tags:
-  - name: Contacts
-    description: Operations about contacts.
   - name: Authorization
     description: Auth operations.
 servers:
@@ -17,16 +15,16 @@ servers:
 paths:
   /contacts:
     get:
-      $ref: ../swagger/paths/contacts/get.yaml
+      $ref: ../swagger/paths/get.yaml
     post:
-      $ref: ../swagger/paths/contacts/post.yaml
-  /contacts/{contactId}:
+      $ref: ../swagger/paths/post.yaml
+  /contacts/{Id}:
     get:
-      $ref: ../swagger/paths/contacts/{contactId}/get.yaml
+      $ref: ../swagger/paths/contacts/{Id}/get.yaml
     patch:
-      $ref: ../swagger/paths/contacts/{contactId}/patch.yaml
+      $ref: ../swagger/paths/contacts/{Id}/patch.yaml
     delete:
-      $ref: ../swagger/paths/contacts/{contactId}/delete.yaml
+      $ref: ../swagger/paths/contacts/{Id}/delete.yaml
 
 components:
   securitySchemes:

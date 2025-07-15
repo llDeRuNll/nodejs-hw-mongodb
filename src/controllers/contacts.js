@@ -62,7 +62,10 @@ export const createContact = async (req, res, next) => {
   if (!name || !phoneNumber || !contactType) {
     throw createError(400, 'name, phoneNumber and contactType are required');
   }
-  const newContact = await addContact(req.body);
+  const newContact = await addContact({
+    ...req.body,
+    userId: req.user._id,
+  });
   const obj = newContact.toObject ? newContact.toObject() : newContact;
   res.status(201).json({
     status: 201,
